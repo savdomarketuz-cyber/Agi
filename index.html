@@ -10,57 +10,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-<!-- AI Brain yuklash -->
-    <script src="app.js"></script>
-    
-    <script>
-        // AI Brain yaratish
-        const ai = new AI_Brain();
-        
-        // Send Message yangilash
-        async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message) return;
 
-            addMessage(message, 'user');
-            messageInput.value = '';
-            showThinking(true);
-
-            try {
-                // AI dan javob olish
-                const response = await ai.processMessage(message);
-                
-                showThinking(false);
-                addMessage(response, 'ai');
-            } catch (error) {
-                showThinking(false);
-                addMessage('Xatolik yuz berdi: ' + error.message, 'ai');
-            }
-        }
-        
-        // File upload yangilash
-        async function handleFileUpload(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            addMessage(`📄 ${file.name} yuklanyapti...`, 'user');
-            showThinking(true);
-
-            try {
-                const text = await file.text();
-                const result = ai.learnFromText(text);
-                
-                showThinking(false);
-                addMessage(`✅ ${file.name} o'qildi! ${result.learned} ta narsa o'rgandim. Jami bilim: ${result.totalKnowledge}`, 'ai');
-            } catch (error) {
-                showThinking(false);
-                addMessage('Fayl o\'qishda xatolik: ' + error.message, 'ai');
-            }
-
-            fileInput.value = '';
-        }
-    </script>
-</body>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -458,6 +408,9 @@
         </div>
     </div>
 
+    <!-- AI Brain yuklash -->
+    <script src="app.js"></script>
+    
     <script>
         // DOM elements
         const chatArea = document.getElementById('chatArea');
@@ -468,6 +421,9 @@
         const thinking = document.getElementById('thinking');
         const settingsBtn = document.getElementById('settingsBtn');
 
+        // AI Brain yaratish
+        const ai = new AI_Brain();
+
         // Event Listeners
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
@@ -477,23 +433,26 @@
         fileInput.addEventListener('change', handleFileUpload);
         settingsBtn.addEventListener('click', openSettings);
 
-        // Send Message
-        function sendMessage() {
+        // Send Message - YANGILANGAN
+        async function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
 
-            // Add user message
             addMessage(message, 'user');
             messageInput.value = '';
-
-            // Show thinking
             showThinking(true);
 
-            // Simulate AI response (keyingi qismda real logic bo'ladi)
-            setTimeout(() => {
+            try {
+                // AI dan javob olish
+                const response = await ai.processMessage(message);
+                
                 showThinking(false);
-                addMessage('Bu test javobi. Keyingi qismlarda real AI logic qo\'shamiz!', 'ai');
-            }, 2000);
+                addMessage(response, 'ai');
+            } catch (error) {
+                showThinking(false);
+                addMessage('Xatolik yuz berdi: ' + error.message, 'ai');
+                console.error('Error:', error);
+            }
         }
 
         // Add message to chat
@@ -530,27 +489,36 @@
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        // Handle file upload
-        function handleFileUpload(e) {
+        // Handle file upload - YANGILANGAN
+        async function handleFileUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
 
             addMessage(`📄 ${file.name} yuklanyapti...`, 'user');
             showThinking(true);
 
-            // Simulate upload (keyingi qismda real logic)
-            setTimeout(() => {
+            try {
+                const text = await file.text();
+                const result = ai.learnFromText(text);
+                
                 showThinking(false);
-                addMessage(`✅ ${file.name} o'qildi va eslab qolindi! Endi bu haqida savol berishingiz mumkin.`, 'ai');
-            }, 3000);
+                addMessage(`✅ ${file.name} o'qildi! ${result.learned} ta narsa o'rgandim. Jami bilim: ${result.totalKnowledge}`, 'ai');
+            } catch (error) {
+                showThinking(false);
+                addMessage('Fayl o\'qishda xatolik: ' + error.message, 'ai');
+                console.error('File error:', error);
+            }
 
             fileInput.value = '';
         }
 
         // Open settings
         function openSettings() {
-            alert('Sozlamalar keyingi qismda qo\'shiladi!');
+            const status = ai.getStatus();
+            alert(`AI Status:\n\nVersiya: ${status.version}\nSuhbatlar: ${status.conversationCount}\nBilimlar: ${status.knowledgeSize}\nXotira: ${status.memorySize}`);
         }
+
+        console.log('✅ UI v1.1 tayyor!');
     </script>
 </body>
 </html>
