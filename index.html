@@ -10,7 +10,57 @@
             padding: 0;
             box-sizing: border-box;
         }
+<!-- AI Brain yuklash -->
+    <script src="app.js"></script>
+    
+    <script>
+        // AI Brain yaratish
+        const ai = new AI_Brain();
+        
+        // Send Message yangilash
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
 
+            addMessage(message, 'user');
+            messageInput.value = '';
+            showThinking(true);
+
+            try {
+                // AI dan javob olish
+                const response = await ai.processMessage(message);
+                
+                showThinking(false);
+                addMessage(response, 'ai');
+            } catch (error) {
+                showThinking(false);
+                addMessage('Xatolik yuz berdi: ' + error.message, 'ai');
+            }
+        }
+        
+        // File upload yangilash
+        async function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            addMessage(`📄 ${file.name} yuklanyapti...`, 'user');
+            showThinking(true);
+
+            try {
+                const text = await file.text();
+                const result = ai.learnFromText(text);
+                
+                showThinking(false);
+                addMessage(`✅ ${file.name} o'qildi! ${result.learned} ta narsa o'rgandim. Jami bilim: ${result.totalKnowledge}`, 'ai');
+            } catch (error) {
+                showThinking(false);
+                addMessage('Fayl o\'qishda xatolik: ' + error.message, 'ai');
+            }
+
+            fileInput.value = '';
+        }
+    </script>
+</body>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
